@@ -47,7 +47,8 @@ public class UserCredentialsService {
             Map<String, Object> profilePayload = Map.of(
                 "id", savedAuth.getId(), // Pass the exact database generated ID
                 "firstName", registerRequest.get("firstName"),
-                "lastName", registerRequest.get("lastName")
+                "lastName", registerRequest.get("lastName"),
+                "email",registerRequest.get("email")
             );
 
             restClient.post()
@@ -64,7 +65,7 @@ public class UserCredentialsService {
             log.error("Registration failed because user-service call crashed. Rolled back user ID: {}", savedAuth.getId(), e);
             throw new ServiceUnavailableException("Registration failed because profile service is unavailable. Transaction rolled back.");
         }
-
+     
         return savedAuth;
     }
 public String loginandGenerateToken(LoginRequest loginRequest) {
