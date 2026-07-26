@@ -58,7 +58,7 @@ public class UserCredentialsServiceTests {
     	registerRequest.put("password", "pwd");
     	registerRequest.put("firstName", "naveen");
     	registerRequest.put("lastName", "mohandas");
-    	
+    	registerRequest.put("email", "mohandas@gmail.com");
     	Credentials savedCredentials = new Credentials();
         savedCredentials.setId(101L); // Mock generated ID
         savedCredentials.setUsername("naveen");
