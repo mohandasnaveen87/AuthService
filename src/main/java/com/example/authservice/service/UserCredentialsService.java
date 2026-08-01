@@ -28,8 +28,7 @@ public class UserCredentialsService {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         //this.restClient = restClientBuilder.baseUrl("http://localhost:8082").build();
-       // this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
-        this.restClient = restClientBuilder.baseUrl("http://user-service").build();
+        this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
         this.jwtService=jwtService;
     }
 
