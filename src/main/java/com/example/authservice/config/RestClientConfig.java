@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfig {
 
     @Bean
-  //  @LoadBalanced // This connects your RestClient directly to the Eureka directory
+    @LoadBalanced // This connects your RestClient directly to the Eureka directory
     public RestClient.Builder restClientBuilder() {
         return RestClient.builder();
     }
