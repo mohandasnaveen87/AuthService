@@ -2,6 +2,7 @@ package com.example.authservice.service;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient; // Or WebClient / FeignClient
@@ -21,14 +22,15 @@ public class UserCredentialsService {
     private final CredentialsRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final RestClient restClient; // Used to call the user-service internally
+    
     private final JwtService jwtService;
     public UserCredentialsService(CredentialsRepository repository, 
     		PasswordEncoder passwordEncoder,
-    		RestClient.Builder restClientBuilder,JwtService jwtService) {
+    		@Qualifier("loadBalancedRestClientBuilder") RestClient.Builder restClientBuilder,JwtService jwtService) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
-        //this.restClient = restClientBuilder.baseUrl("http://localhost:8082").build();
-        this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
+       // this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
+        this.restClient = restClientBuilder.baseUrl("http://user-service").build();
         this.jwtService=jwtService;
     }
 
