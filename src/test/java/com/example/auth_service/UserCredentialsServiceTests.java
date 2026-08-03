@@ -133,11 +133,11 @@
 //	 lr.setUsername("bobby");
 //	 lr.setPassword("pwd");
 //	 
-////	 Credentials savedCredentials = new Credentials();
-////     savedCredentials.setId(101L); // Mock generated ID
-////     savedCredentials.setUsername("naveen");
-////     savedCredentials.setPassword("pwd");
-////     savedCredentials.setRole(Role.PARENT);
+//Credentials savedCredentials = new Credentials();
+// savedCredentials.setId(101L); // Mock generated ID
+//savedCredentials.setUsername("naveen");
+//savedCredentials.setPassword("pwd");
+//savedCredentials.setRole(Role.PARENT);
 //	 when(repository.findByUsername(any(String.class))).thenReturn(Optional.empty());
 //	 
 //	 
