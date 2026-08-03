@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 @Service
@@ -21,6 +22,7 @@ public class UserServiceClient {
 
 
 	@CircuitBreaker(name = "userServiceCB")
+	@Bulkhead(name="userServiceBulkhead")
 	@Retry(name = "userServiceRetry")
     public void createUserProfile(Map<String, Object> profilePayload) {
         restClient.post()
