@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient; // Or WebClient / FeignClient
 
 import com.example.authservice.ServiceUnavailableException;
@@ -12,7 +13,6 @@ import com.example.authservice.dto.LoginRequest;
 import com.example.authservice.hibernate.entity.Credentials;
 import com.example.authservice.hibernate.entity.CredentialsRepository;
 import com.example.authservice.hibernate.entity.Role;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -21,10 +21,11 @@ public class UserCredentialsService {
 
     private final CredentialsRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final RestClient restClient; // Used to call the user-service internally
+  //  private final RestClient restClient; // Used to call the user-service internally
     
     private final JwtService jwtService;
-    public UserCredentialsService(CredentialsRepository repository, 
+    private final UserServiceClient userServiceClient;
+   /** public UserCredentialsService(CredentialsRepository repository, 
     		PasswordEncoder passwordEncoder,
     		@Qualifier("loadBalancedRestClientBuilder") RestClient.Builder restClientBuilder,JwtService jwtService) {
         this.repository = repository;
@@ -32,9 +33,56 @@ public class UserCredentialsService {
        // this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
         this.restClient = restClientBuilder.baseUrl("http://user-service").build();
         this.jwtService=jwtService;
+    }**/
+    public UserCredentialsService(CredentialsRepository repository, 
+    		PasswordEncoder passwordEncoder,
+    		UserServiceClient userServiceClient,JwtService jwtService) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+       // this.restClient = restClientBuilder.baseUrl("http://user-service:8082").build();
+      //  this.restClient = restClientBuilder.baseUrl("http://user-service").build();
+        this.jwtService=jwtService;
+        this.userServiceClient=userServiceClient;
     }
-
+    
+    //@Transactional
     public Credentials register(Map<String, String> registerRequest) {
+        // 1. Save to auth_db first
+    	
+    	Credentials savedAuth=saveCredentialsInTransaction(registerRequest);
+        System.out.println("New user id:"+savedAuth.getId());
+        
+        Map<String, Object> profilePayload = Map.of(
+                "id", savedAuth.getId(), // Pass the exact database generated ID
+                "firstName", registerRequest.get("firstName"),
+                "lastName", registerRequest.get("lastName"),
+                "email",registerRequest.get("email")
+            );
+        
+        try {
+            userServiceClient.createUserProfile(profilePayload);
+        } catch (Exception e) {
+            // 4. Manual compensating action if user-service fails
+            deleteCredentialsInTransaction(savedAuth.getId());
+            throw new ServiceUnavailableException("Registration failed: User service is down. Transaction compensated.");
+        }
+        
+        return savedAuth;
+    }
+    @Transactional
+    public void deleteCredentialsInTransaction(Long id) {
+        repository.deleteById(id);
+    }
+ // Isolated transactional save
+    @Transactional
+    public Credentials saveCredentialsInTransaction(Map<String, String> registerRequest) {
+        Credentials credentials = new Credentials();
+        credentials.setUsername(registerRequest.get("username"));
+        credentials.setPassword(passwordEncoder.encode(registerRequest.get("password")));
+        credentials.setRole(Role.PARENT);
+        return repository.save(credentials);
+    }
+    /**public Credentials register(Map<String, String> registerRequest) {
         // 1. Save to auth_db first
         Credentials credentials = new Credentials();
         credentials.setUsername(registerRequest.get("username"));
@@ -69,7 +117,7 @@ public class UserCredentialsService {
         }
      
         return savedAuth;
-    }
+    }**/
 public String loginandGenerateToken(LoginRequest loginRequest) {
 	
 	

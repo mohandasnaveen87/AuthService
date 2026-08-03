@@ -101,6 +101,11 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-zipkin</artifactId>
 </dependency>
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-spring-boot3</artifactId>
+</dependency>
+<!-- Required if you use AOP annotations like @CircuitBreaker -->
   <!--  <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-tracing-bridge-otel</artifactId>
