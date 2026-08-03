@@ -3,11 +3,12 @@ package com.example.authservice.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
-
+@Service
 public class UserServiceClient {
 	
 	 private final RestClient restClient;
